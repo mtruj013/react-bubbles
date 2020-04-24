@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import {  axiosWithAuth } from "../utils/axiosWithAuth"
+import { useParams } from "react-router-dom"
 
 const initialColor = {
   color: "",
   code: { hex: "" }
 };
 
-const ColorList = ({ colors, updateColors, deleteCol }) => {
+const ColorList = ({ colors, updateColors, getColors }) => {
   console.log(colors);
   const [editing, setEditing] = useState(false);
   const [colorToEdit, setColorToEdit] = useState(initialColor);
@@ -21,6 +22,18 @@ const ColorList = ({ colors, updateColors, deleteCol }) => {
     // Make a put request to save your updated color
     // think about where will you get the id from...
     // where is is saved right now?
+    axiosWithAuth()
+    .put(`/api/colors/${colorToEdit.id}`, colorToEdit)
+    .then(res => {
+      // getColors()
+      updateColors(colors.map(item => {
+        return item.id === colorToEdit.id ?  (res.data) : item 
+      }))
+    })
+    .catch(err => {
+      console.log("couldn't save edit :(", err)
+    })
+
   };
 
   const deleteColor = color => {
